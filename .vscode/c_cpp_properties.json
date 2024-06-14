@@ -22,7 +22,7 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/homebrew/include"
+                "/opt/local/include/"
             ],
             "defines": [
                 "_DEBUG",

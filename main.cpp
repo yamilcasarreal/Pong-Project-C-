@@ -3,6 +3,9 @@
 
 using namespace std;
 
+int player_score = 0;
+int cpu_score = 0;
+
 class Ball
 {
 public:
@@ -24,10 +27,25 @@ public:
         {
             speed_y *= -1;
         }
-        if (x + radius >= GetScreenWidth() || x - radius <= 0)
+        if (x + radius >= GetScreenWidth()) // cpu scores
         {
-            speed_x *= -1;
+            cpu_score += 5;
+            ResetBall();
         }
+        if (x - radius <= 0) // playerscores
+        {
+            player_score += 5;
+            ResetBall();
+        }
+    }
+    void ResetBall()
+    {
+        x = GetScreenHeight() / 2;
+        y = GetScreenHeight() / 2;
+
+        int directionChoice[2] = {-1, 1};
+        speed_x *= directionChoice[GetRandomValue(0, 1)];
+        speed_y *= directionChoice[GetRandomValue(0, 1)];
     }
 };
 
@@ -86,7 +104,7 @@ CpuPaddle cpu;
 int main()
 {
 
-    // cout << "Hello World" << endl;
+    cout << "Hello World" << endl;
     const int screen_width = 1280;
     const int screen_height = 800;
     InitWindow(screen_width, screen_height, "Pong");
@@ -120,6 +138,32 @@ int main()
         ball.Update();
         player.Update();
 
+        // Checking for collision
+        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, Rectangle{player.x, player.y, player.width, player.height}))
+        {
+            ball.speed_x *= -1;
+            if (player.y - player.height / 2 > ball.y)
+            {
+                if (ball.speed_y > 0)
+                {
+                    ball.speed_y *= -1;
+                    cout << "TRUE TRUE TRUE" << endl;
+                }
+            }
+        }
+
+        if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, Rectangle{cpu.x, cpu.y, cpu.width, cpu.height}))
+        {
+            ball.speed_x *= -1;
+            if (cpu.y - cpu.height / 2 > ball.y)
+            {
+                if (ball.speed_y > 0)
+                {
+                    ball.speed_y *= -1;
+                    cout << "TRUE TRUE TRUE" << endl;
+                }
+            }
+        }
         cpu.Update(ball.y);
 
         // Drawing
@@ -128,6 +172,10 @@ int main()
         player.Draw();
         cpu.Draw();
         DrawLine(screen_width / 2, 0, screen_width / 2, screen_height, WHITE);
+
+        DrawText(TextFormat("%d", cpu_score), screen_width / 4 - 20, 20, 80, WHITE);
+        DrawText(TextFormat("%d", player_score), 3 * screen_width / 4 - 20, 20, 80, WHITE);
+
         EndDrawing();
     }
 

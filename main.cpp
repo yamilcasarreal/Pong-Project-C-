@@ -1,4 +1,4 @@
-#include <raylib.h>
+#include <include/raylib.h>
 #include <iostream>
 
 using namespace std;
@@ -142,27 +142,11 @@ int main()
         if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, Rectangle{player.x, player.y, player.width, player.height}))
         {
             ball.speed_x *= -1;
-            if (player.y - player.height / 2 > ball.y)
-            {
-                if (ball.speed_y > 0)
-                {
-                    ball.speed_y *= -1;
-                    cout << "TRUE TRUE TRUE" << endl;
-                }
-            }
         }
 
         if (CheckCollisionCircleRec(Vector2{ball.x, ball.y}, ball.radius, Rectangle{cpu.x, cpu.y, cpu.width, cpu.height}))
         {
             ball.speed_x *= -1;
-            if (cpu.y - cpu.height / 2 > ball.y)
-            {
-                if (ball.speed_y > 0)
-                {
-                    ball.speed_y *= -1;
-                    cout << "TRUE TRUE TRUE" << endl;
-                }
-            }
         }
         cpu.Update(ball.y);
 

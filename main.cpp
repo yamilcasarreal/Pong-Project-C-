@@ -1,10 +1,11 @@
-#include <include/raylib.h>
+#include <raylib.h>
 #include <iostream>
 
 using namespace std;
 
 int player_score = 0;
 int cpu_score = 0;
+double startTime = 0;
 
 class Ball
 {
@@ -12,6 +13,7 @@ public:
     float x, y;
     int speed_x, speed_y;
     int radius;
+    bool allowMovement = false;
 
     void Draw()
     {
@@ -20,9 +22,15 @@ public:
 
     void Update()
     {
-        x += speed_x;
-        y += speed_y;
-
+        if (allowMovement)
+        {
+            x += speed_x;
+            y += speed_y;
+        }
+        if (GetTime() - startTime >= 3)
+        {
+            allowMovement = true;
+        }
         if (y + radius >= GetScreenHeight() || y - radius <= 0)
         {
             speed_y *= -1;
@@ -31,18 +39,20 @@ public:
         {
             cpu_score += 5;
             ResetBall();
+            startTime = GetTime();
         }
         if (x - radius <= 0) // playerscores
         {
             player_score += 5;
             ResetBall();
+            startTime = GetTime();
         }
     }
     void ResetBall()
     {
-        x = GetScreenHeight() / 2;
+        allowMovement = false;
+        x = GetScreenWidth() / 2;
         y = GetScreenHeight() / 2;
-
         int directionChoice[2] = {-1, 1};
         speed_x *= directionChoice[GetRandomValue(0, 1)];
         speed_y *= directionChoice[GetRandomValue(0, 1)];
@@ -88,11 +98,10 @@ class CpuPaddle : public Paddle
 public:
     void Update(int ball_y)
     {
+
         if (y + height / 2 > ball_y)
-        {
             y -= speed;
-        }
-        else
+        if (y + height / 2 < ball_y)
             y += speed;
 
         LimitMovement();
@@ -159,7 +168,7 @@ int main()
 
         DrawText(TextFormat("%d", cpu_score), screen_width / 4 - 20, 20, 80, WHITE);
         DrawText(TextFormat("%d", player_score), 3 * screen_width / 4 - 20, 20, 80, WHITE);
-
+        DrawText(TextFormat("Time that has elapsed: %f", GetTime() - startTime), 70, 0, 10, WHITE);
         EndDrawing();
     }
 
